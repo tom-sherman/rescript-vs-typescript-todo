@@ -5,16 +5,16 @@ module App = {
   type action = Add(todo) | Remove(int) | Toggle(int) | InputChange(string)
 
   let reducer = (state, action) =>
-    switch (state, action) {
-    | ({todos}, Add(todo)) => {todos: todos->Js.Array2.concat([todo]), input: ""}
-    | ({todos}, Remove(id)) => {...state, todos: todos->Js.Array2.filteri((_, i) => i !== id)}
-    | ({todos}, Toggle(id)) => {
+    switch action {
+    | Add(todo) => {todos: state.todos->Js.Array2.concat([todo]), input: ""}
+    | Remove(id) => {...state, todos: state.todos->Js.Array2.filteri((_, i) => i !== id)}
+    | Toggle(id) => {
         ...state,
-        todos: todos->Js.Array2.mapi((todo, i) =>
+        todos: state.todos->Js.Array2.mapi((todo, i) =>
           id == i ? {...todo, complete: !todo.complete} : todo
         ),
       }
-    | (_, InputChange(input)) => {...state, input: input}
+    | InputChange(input) => {...state, input: input}
     }
 
   @react.component
@@ -31,14 +31,18 @@ module App = {
           }}
       />
       <ol>
-        {todos
-        ->Js.Array2.mapi((todo, i) =>
-          <li key={Js.Int.toString(i)}>
-            <input type_="checkbox" checked={todo.complete} onChange={_ => dispatch(Toggle(i))} />
-            {todo.content->React.string}
-          </li>
-        )
-        ->React.array}
+        {switch todos->Js.Array2.length {
+        | 0 => <p> {React.string("You haven't added anything to your list yet.")} </p>
+        | _ =>
+          todos
+          ->Js.Array2.mapi((todo, i) =>
+            <li key={Js.Int.toString(i)}>
+              <input type_="checkbox" checked={todo.complete} onChange={_ => dispatch(Toggle(i))} />
+              {todo.content->React.string}
+            </li>
+          )
+          ->React.array
+        }}
       </ol>
     </>
   }
