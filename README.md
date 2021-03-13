@@ -1,16 +1,3 @@
-# ReScript React Todo
+## Todo app: ReScript vs Typescript
 
-A simple todo example using ReScript/React, built with snowpack.
-
-### Starting
-
-```
-yarn
-yarn start:rescript
-```
-
-In a seperate terminal:
-
-```
-yarn start:snowpack
-```
+A simple todo list app implemented in ReScript and Typescript.

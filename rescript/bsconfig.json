@@ -6,7 +6,8 @@
     "react-jsx": 3
   },
   "bsc-flags": [
-    "-bs-super-errors"
+    "-bs-super-errors",
+    "-warn-error +8"
   ],
   "sources": {
     "dir": "src",
@@ -24,6 +25,5 @@
   "warnings": {
     "error": "+101"
   },
-  "ppx-flags": [],
-  "refmt": 3
+  "ppx-flags": []
 }
