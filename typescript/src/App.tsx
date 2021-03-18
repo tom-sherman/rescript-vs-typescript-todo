@@ -33,7 +33,6 @@ type Action =
     };
 
 function appReducer(state: State, action: Action): State {
-  // Mention what happens when we miss a case
   switch (action.type) {
     case 'ADD': {
       return {
@@ -73,15 +72,12 @@ function appReducer(state: State, action: Action): State {
   }
 }
 
-interface AppProps {}
-
-function App({}: AppProps) {
-  // React have done well on the types here by inferring the state from the type of appReducer
-  // But you still need to type the appReducer manually where as in rescript it's fully inferred
+function App() {
   const [{ todos, input }, dispatch] = useReducer(appReducer, {
     todos: [],
     input: '',
   });
+
   return (
     <>
       <input
@@ -103,24 +99,26 @@ function App({}: AppProps) {
         }}
       />
 
-      <ol>
-        {todos.length === 0
-          ? "You haven't added anything to your list yet."
-          : todos.map((todo, i) => (
-              <TodoItem
-                key={i}
-                todo={todo}
-                onToggle={() =>
-                  dispatch({
-                    type: 'TOGGLE',
-                    payload: {
-                      id: i,
-                    },
-                  })
-                }
-              />
-            ))}
-      </ol>
+      {todos.length === 0 ? (
+        <p>You haven't added anything to your list yet.</p>
+      ) : (
+        <ol>
+          {todos.map((todo, i) => (
+            <TodoItem
+              key={i}
+              todo={todo}
+              onToggle={() =>
+                dispatch({
+                  type: 'TOGGLE',
+                  payload: {
+                    id: i,
+                  },
+                })
+              }
+            />
+          ))}
+        </ol>
+      )}
     </>
   );
 }

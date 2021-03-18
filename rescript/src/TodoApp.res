@@ -16,7 +16,7 @@ module Todo = {
 
 module TodoItem = {
   @react.component
-  let make = (~todo, ~onToggle) =>
+  let make = (~onToggle, ~todo) =>
     <li>
       <input type_="checkbox" checked={todo->Todo.isComplete} onChange={_ => onToggle()} />
       {switch todo {
@@ -33,13 +33,15 @@ module TodoItem = {
 module App = {
   type state = {todos: array<Todo.t>, input: string}
 
+  let defaultState = {todos: [], input: ""}
+
   type action = Add | Remove({id: int}) | Toggle({id: int}) | InputChange({value: string})
 
   let reducer = (state, action) =>
     switch action {
     | Add => {
-        todos: state.todos->Js.Array2.concat([Incomplete({content: state.input})]),
         input: "",
+        todos: state.todos->Js.Array2.concat([Incomplete({content: state.input})]),
       }
     | Remove({id}) => {...state, todos: state.todos->Js.Array2.filteri((_, i) => i != id)}
     | Toggle({id}) => {
@@ -57,7 +59,7 @@ module App = {
 
   @react.component
   let make = () => {
-    let ({todos, input}, dispatch) = React.useReducer(reducer, {todos: [], input: ""})
+    let ({todos, input}, dispatch) = React.useReducer(reducer, defaultState)
 
     <>
       <input
@@ -71,19 +73,19 @@ module App = {
             dispatch(Add)
           }}
       />
-      <ol>
-        {if todos->Js.Array2.length == 0 {
-          <p> {React.string("You haven't added anything to your list yet.")} </p>
-        } else {
-          todos
+      {if todos->Js.Array2.length == 0 {
+        <p> {React.string("You haven't added anything to your list yet.")} </p>
+      } else {
+        <ol>
+          {todos
           ->Js.Array2.mapi((todo, i) =>
             <TodoItem
               key={i->Js.Int.toString} todo={todo} onToggle={() => dispatch(Toggle({id: i}))}
             />
           )
-          ->React.array
-        }}
-      </ol>
+          ->React.array}
+        </ol>
+      }}
     </>
   }
 }
